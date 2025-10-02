@@ -1,5 +1,6 @@
 import { Button } from "antd";
 import Image from "next/image";
+import Link from "next/link";
 
 function HomepageIndex() {
   return (
@@ -15,7 +16,9 @@ function HomepageIndex() {
         />
 
         <div className="w-full flex flex-col gap-4 text-center items-center justify-center sm:text-left">
-          <Button size="large">Get Started</Button>
+          <Link href="/sandbox">
+            <Button size="large">Get Started</Button>
+          </Link>
         </div>
       </main>
     </div>
