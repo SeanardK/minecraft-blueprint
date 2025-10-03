@@ -2,13 +2,17 @@
 
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Button, notification } from "antd";
+import { notification } from "antd";
 import { useState } from "react";
+import SandboxContextMenu from "../components/ContextMenu";
+import SandboxToolbar from "../components/Toolbar";
 
 function SandboxIndex() {
   const [api, contextHolder] = notification.useNotification();
 
   const [mode, setMode] = useState<"add" | "remove">("add");
+
+  const [isShowContextMenu, setIsShowContextMenu] = useState(false);
 
   const initialBlockList = [
     {
@@ -82,45 +86,49 @@ function SandboxIndex() {
       {contextHolder}
 
       <main id="canvas-container" className="min-h-screen w-screen h-screen min-w-screen relative">
-        <Canvas camera={{ position: [3, 3, 3] }}>
+        <Canvas
+          onContextMenu={(e) => {
+            if (!isShowContextMenu) {
+              setIsShowContextMenu((prev) => !prev);
+            }
+          }}
+          camera={{ position: [3, 3, 3] }}
+        >
           <ambientLight intensity={1} />
+          {blockList.map((block, index) => {
+            const blockId = `block-${block.x}-${block.y}-${block.z}`;
 
-          {blockList.map((block, index) => (
-            <group
-              onClick={(data) => handleClick(data, { x: block.x, y: block.y, z: block.z })}
-              position={[block.x, block.y, block.z]}
-              key={block.position.toString()}
-            >
-              <mesh>
-                <boxGeometry args={[1, 1, 1]} />
-                <meshStandardMaterial color="red" />
-              </mesh>
+            return (
+              <group
+                onClick={(data) => handleClick(data, { x: block.x, y: block.y, z: block.z })}
+                position={[block.x, block.y, block.z]}
+                key={blockId}
+              >
+                <mesh>
+                  <boxGeometry args={[1, 1, 1]} />
+                  <meshStandardMaterial color="red" />
+                </mesh>
 
-              <mesh>
-                <boxGeometry args={[1.01, 1.01, 1.01]} />
-                <meshStandardMaterial wireframe />
-              </mesh>
-            </group>
-          ))}
+                <mesh>
+                  <boxGeometry args={[1.01, 1.01, 1.01]} />
+                  <meshStandardMaterial wireframe />
+                </mesh>
+              </group>
+            );
+          })}
 
           <OrbitControls />
         </Canvas>
 
-        {/* Mode Select */}
-        <div className="absolute bottom-4 flex justify-center gap-2 w-full">
-          <Button onClick={() => setMode("add")} type={mode === "add" ? "primary" : "default"}>
-            ADD
-          </Button>
-          <Button
-            onClick={() => setMode("remove")}
-            type={mode === "remove" ? "primary" : "default"}
-          >
-            REMOVE
-          </Button>
-          <Button color="danger" variant="solid" onClick={() => setBlockList(initialBlockList)}>
-            RESET
-          </Button>
-        </div>
+        <SandboxToolbar />
+
+        <SandboxContextMenu
+          isOpen={isShowContextMenu}
+          activeMode={mode}
+          setMode={setMode}
+          handleResetBlockList={() => setBlockList(initialBlockList)}
+          handleClose={() => setIsShowContextMenu(false)}
+        />
       </main>
     </>
   );
