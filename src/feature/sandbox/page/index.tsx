@@ -1,11 +1,14 @@
 "use client";
 
 import { OrbitControls } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, type ThreeEvent } from "@react-three/fiber";
 import { notification } from "antd";
+import { useAtom } from "jotai";
 import { useState } from "react";
+import SandboxBlock from "../components/Block";
 import SandboxContextMenu from "../components/ContextMenu";
 import SandboxToolbar from "../components/Toolbar";
+import { selectedBlock } from "../store";
 
 function SandboxIndex() {
   const [api, contextHolder] = notification.useNotification();
@@ -14,18 +17,27 @@ function SandboxIndex() {
 
   const [isShowContextMenu, setIsShowContextMenu] = useState(false);
 
+  const [selectedBlockLocale] = useAtom(selectedBlock);
+
   const initialBlockList = [
     {
       x: 0,
       y: 0,
       z: 0,
-      type: "stone",
+      block: {
+        id: "4",
+        spritePosition: "28-4-0",
+        name: "Cobblestone",
+        textId: "(minecraft:cobblestone)",
+      },
     },
   ];
-
   const [blockList, setBlockList] = useState(initialBlockList);
 
-  const handleClick = (data: any, position: { x: number; y: number; z: number }) => {
+  const handleClick = (
+    data: ThreeEvent<MouseEvent>,
+    position: { x: number; y: number; z: number }
+  ) => {
     data.stopPropagation();
 
     const blockPosition = position;
@@ -58,7 +70,7 @@ function SandboxIndex() {
         };
       }
 
-      setBlockList((prev) => [...prev, { ...newBlockPosition, type: "stone" }]);
+      setBlockList((prev) => [...prev, { ...newBlockPosition, block: selectedBlockLocale }]);
     }
 
     if (mode === "remove") {
@@ -87,7 +99,7 @@ function SandboxIndex() {
 
       <main id="canvas-container" className="min-h-screen w-screen h-screen min-w-screen relative">
         <Canvas
-          onContextMenu={(e) => {
+          onContextMenu={() => {
             if (!isShowContextMenu) {
               setIsShowContextMenu((prev) => !prev);
             }
@@ -96,25 +108,9 @@ function SandboxIndex() {
         >
           <ambientLight intensity={1} />
           {blockList.map((block, index) => {
-            const blockId = `block-${block.x}-${block.y}-${block.z}`;
+            const blockId = `block-${block.x}-${block.y}-${block.z}-${index}`;
 
-            return (
-              <group
-                onClick={(data) => handleClick(data, { x: block.x, y: block.y, z: block.z })}
-                position={[block.x, block.y, block.z]}
-                key={blockId}
-              >
-                <mesh>
-                  <boxGeometry args={[1, 1, 1]} />
-                  <meshStandardMaterial color="red" />
-                </mesh>
-
-                <mesh>
-                  <boxGeometry args={[1.01, 1.01, 1.01]} />
-                  <meshStandardMaterial wireframe />
-                </mesh>
-              </group>
-            );
+            return <SandboxBlock block={block} handleClick={handleClick} key={blockId} />;
           })}
 
           <OrbitControls />

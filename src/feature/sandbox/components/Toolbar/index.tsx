@@ -3,9 +3,11 @@
 import "./item-icon.css";
 
 import { Button, Modal } from "antd";
-import { useState } from "react";
+import { useAtom } from "jotai";
+import { useEffect, useState } from "react";
 import { AiOutlineTable } from "react-icons/ai";
 import { ItemList, type ItemType } from "../../data/ItemList";
+import { activeToolbarIndex, listToolbarItems, selectedBlock } from "../../store";
 
 // Local Components
 type ToolbarProps = {
@@ -21,7 +23,7 @@ const Toolbar = ({ listToolbar, activeToolbar, setActiveToolbar }: ToolbarProps)
           color={activeToolbar === index ? "cyan" : "default"}
           variant={activeToolbar === index ? "solid" : "outlined"}
           className="!w-[50px] !h-[50px] !p-0"
-          key={index}
+          key={`toolbar-${index}`}
           onClick={() => {
             setActiveToolbar(index);
           }}
@@ -36,9 +38,14 @@ const Toolbar = ({ listToolbar, activeToolbar, setActiveToolbar }: ToolbarProps)
 // Main Component
 function SandboxToolbar() {
   const [showNodalItems, setShowModalItems] = useState(false);
-  const [activeToolbar, setActiveToolbar] = useState(0);
 
-  const [listToolbar, setListToolbar] = useState(ItemList.slice(1, 10));
+  const [_, setSelectedBlock] = useAtom(selectedBlock);
+  const [activeToolbar, setActiveToolbar] = useAtom(activeToolbarIndex);
+  const [listToolbar, setListToolbar] = useAtom(listToolbarItems);
+
+  useEffect(() => {
+    setSelectedBlock(listToolbar[activeToolbar]);
+  }, [activeToolbar, setSelectedBlock, listToolbar]);
 
   return (
     <>
@@ -77,17 +84,18 @@ function SandboxToolbar() {
         className="!w-auto !min-w-0"
       >
         <div className="max-h-[300px] max-w-[470px] overflow-auto">
-          {ItemList.map((v) => {
+          {ItemList.map((v, index) => {
             return (
               <Button
                 className="!w-[50px] !h-[50px] !p-0"
-                key={`items-${v.id}`}
+                key={`items-${v.id}-${index}`}
                 onClick={() => {
                   const newList = [...listToolbar];
 
                   newList[activeToolbar] = v;
 
                   setListToolbar(newList);
+                  setSelectedBlock(v);
                 }}
               >
                 <div className={`items-${v.spritePosition} w-[32px] h-[32px]`} />
