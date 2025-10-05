@@ -8,6 +8,7 @@ import { useState } from "react";
 import SandboxBlock from "../components/Block";
 import SandboxContextMenu from "../components/ContextMenu";
 import SandboxToolbar from "../components/Toolbar";
+import type { ItemType } from "../data/ItemList";
 import { selectedBlock } from "../store";
 
 function SandboxIndex() {
@@ -19,16 +20,19 @@ function SandboxIndex() {
 
   const [selectedBlockLocale] = useAtom(selectedBlock);
 
-  const initialBlockList = [
+  const initialBlockList: { x: number; y: number; z: number; block: ItemType }[] = [
     {
       x: 0,
       y: 0,
       z: 0,
       block: {
-        id: "4",
-        spritePosition: "28-4-0",
-        name: "Cobblestone",
-        textId: "(minecraft:cobblestone)",
+        id: "2",
+        spritePosition: "28-2-0",
+        name: "Grass",
+        textId: "(minecraft:grass)",
+        sideTexture: "grass_side_carried",
+        topTexture: "grass_carried",
+        bottomTexture: "dirt",
       },
     },
   ];
@@ -97,7 +101,7 @@ function SandboxIndex() {
     <>
       {contextHolder}
 
-      <main id="canvas-container" className="min-h-screen w-screen h-screen min-w-screen relative">
+      <main id="canvas-container" className="min-h-dvh w-dvw h-dvh min-w-dvw relative">
         <Canvas
           onContextMenu={() => {
             if (!isShowContextMenu) {

@@ -13,7 +13,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md}": [
-      "biome check --write"
+      "biome check --write --colors=force"
     ]
   },
   "dependencies": {
