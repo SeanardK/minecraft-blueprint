@@ -50,28 +50,30 @@ function SandboxIndex() {
     if (mode === "add") {
       let newBlockPosition = blockPosition;
 
-      if (selectedFace.x !== 0) {
-        newBlockPosition = {
-          x: blockPosition.x + +selectedFace.x,
-          y: blockPosition.y,
-          z: blockPosition.z,
-        };
-      }
+      if (selectedFace) {
+        if (selectedFace?.x !== 0) {
+          newBlockPosition = {
+            x: blockPosition.x + selectedFace?.x,
+            y: blockPosition.y,
+            z: blockPosition.z,
+          };
+        }
 
-      if (selectedFace.y !== 0) {
-        newBlockPosition = {
-          x: blockPosition.x,
-          y: blockPosition.y + +selectedFace.y,
-          z: blockPosition.z,
-        };
-      }
+        if (selectedFace?.y !== 0) {
+          newBlockPosition = {
+            x: blockPosition.x,
+            y: blockPosition.y + +selectedFace?.y,
+            z: blockPosition.z,
+          };
+        }
 
-      if (selectedFace.z !== 0) {
-        newBlockPosition = {
-          x: blockPosition.x,
-          y: blockPosition.y,
-          z: blockPosition.z + +selectedFace.z,
-        };
+        if (selectedFace?.z !== 0) {
+          newBlockPosition = {
+            x: blockPosition.x,
+            y: blockPosition.y,
+            z: blockPosition.z + +selectedFace?.z,
+          };
+        }
       }
 
       setBlockList((prev) => [...prev, { ...newBlockPosition, block: selectedBlockLocale }]);
