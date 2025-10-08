@@ -6,8 +6,10 @@ import { Button, Modal } from "antd";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { AiOutlineTable } from "react-icons/ai";
+import { MdNumbers } from "react-icons/md";
 import { ItemList, type ItemType } from "../../data/ItemList";
 import { activeToolbarIndex, listToolbarItems, selectedBlock } from "../../store";
+import SandboxTotalBlockRequired from "../TotalBlockRequired";
 
 // Local Components
 type ToolbarProps = {
@@ -38,6 +40,7 @@ const Toolbar = ({ listToolbar, activeToolbar, setActiveToolbar }: ToolbarProps)
 // Main Component
 function SandboxToolbar() {
   const [showNodalItems, setShowModalItems] = useState(false);
+  const [showModalTotalBlockRequired, setShowModalTotalBlockRequired] = useState(false);
 
   const [_, setSelectedBlock] = useAtom(selectedBlock);
   const [activeToolbar, setActiveToolbar] = useAtom(activeToolbarIndex);
@@ -52,12 +55,12 @@ function SandboxToolbar() {
       <div className="absolute w-screen bottom-4">
         <div className="w-full z-10 flex justify-center gap-0.5">
           <Button
-            className="!w-[50px] !h-[50px] text-xl font-bold mr-4 invisible"
+            className="!w-[50px] !h-[50px] text-xl font-bold mr-4"
             onClick={() => {
-              setShowModalItems(true);
+              setShowModalTotalBlockRequired(true);
             }}
           >
-            +
+            <MdNumbers size={32} />
           </Button>
           <Toolbar
             listToolbar={listToolbar}
@@ -75,6 +78,7 @@ function SandboxToolbar() {
         </div>
       </div>
 
+      {/* Inventory Modal */}
       <Modal
         open={showNodalItems}
         onCancel={() => setShowModalItems(false)}
@@ -110,6 +114,20 @@ function SandboxToolbar() {
             activeToolbar={activeToolbar}
             setActiveToolbar={setActiveToolbar}
           />
+        </div>
+      </Modal>
+
+      {/* Total Block Required */}
+      <Modal
+        open={showModalTotalBlockRequired}
+        onCancel={() => setShowModalTotalBlockRequired(false)}
+        centered
+        closable={false}
+        footer={null}
+        className="!w-auto !min-w-0"
+      >
+        <div className="overflow-auto max-h-[80vh] max-w-[500px]">
+          <SandboxTotalBlockRequired />
         </div>
       </Modal>
     </>
