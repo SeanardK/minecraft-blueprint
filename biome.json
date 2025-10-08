@@ -29,7 +29,10 @@
       "recommended": true,
       "correctness": {
         "noUnusedVariables": "error",
-        "noUnusedImports": "error"
+        "noUnusedImports": "error",
+        "useUniqueElementIds": "warn",
+        "useHookAtTopLevel": "warn",
+        "useExhaustiveDependencies": "warn"
       },
       "style": {
         "useImportType": "error",
@@ -42,6 +45,9 @@
       },
       "performance": {
         "noDelete": "error"
+      },
+      "a11y": {
+        "noStaticElementInteractions": "warn"
       }
     }
   },
