@@ -8,8 +8,7 @@ import { useState } from "react";
 import SandboxBlock from "../components/Block";
 import SandboxContextMenu from "../components/ContextMenu";
 import SandboxToolbar from "../components/Toolbar";
-import type { ItemType } from "../data/ItemList";
-import { selectedBlock } from "../store";
+import { blocksPlaced, selectedBlock } from "../store";
 
 function SandboxIndex() {
   const [api, contextHolder] = notification.useNotification();
@@ -20,23 +19,20 @@ function SandboxIndex() {
 
   const [selectedBlockLocale] = useAtom(selectedBlock);
 
-  const initialBlockList: { x: number; y: number; z: number; block: ItemType }[] = [
+  const initialBlockList: {
+    x: number;
+    y: number;
+    z: number;
+    blockId: string;
+  }[] = [
     {
       x: 0,
       y: 0,
       z: 0,
-      block: {
-        id: "2",
-        spritePosition: "28-2-0",
-        name: "Grass",
-        textId: "(minecraft:grass)",
-        sideTexture: "grass_side_carried",
-        topTexture: "grass_carried",
-        bottomTexture: "dirt",
-      },
+      blockId: "2",
     },
   ];
-  const [blockList, setBlockList] = useState(initialBlockList);
+  const [blockList, setBlockList] = useAtom(blocksPlaced);
 
   const handleClick = (
     data: ThreeEvent<MouseEvent>,
@@ -76,7 +72,7 @@ function SandboxIndex() {
         }
       }
 
-      setBlockList((prev) => [...prev, { ...newBlockPosition, block: selectedBlockLocale }]);
+      setBlockList((prev) => [...prev, { ...newBlockPosition, blockId: selectedBlockLocale.id }]);
     }
 
     if (mode === "remove") {

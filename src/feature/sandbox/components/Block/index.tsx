@@ -1,40 +1,50 @@
 import { useTexture } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { listBlockIdWithHeight90Percent } from "../../data/blockNotFull";
-import type { ItemType } from "../../data/ItemList";
+import { ItemList } from "../../data/ItemList";
+
+export type BlockProperties = {
+  x: number;
+  y: number;
+  z: number;
+  blockId: string;
+};
 
 function SandboxBlock({
   block,
   handleClick,
 }: {
-  block: { x: number; y: number; z: number; block: ItemType };
+  block: BlockProperties;
   handleClick: (
     data: ThreeEvent<MouseEvent>,
     position: { x: number; y: number; z: number }
   ) => void;
 }) {
+  const blockData = useMemo(
+    () => ItemList.find((item) => item.id === block.blockId),
+    [block.blockId]
+  );
+
   const blockId = `block-${block.x}-${block.y}-${block.z}`;
 
   const defaultTexture = "/images/textures/blocks/dirt.png";
   const fallbackTexture = "/images/textures/blocks/barrier.png";
 
   const isBlockHeight90Percent = listBlockIdWithHeight90Percent.find(
-    (id: string) => id === block.block.id
+    (id: string) => id === blockData?.id
   );
 
-  const mainTexture = block.block.texture
-    ? `/images/textures/blocks/${block.block.texture}.png`
+  const mainTexture = blockData?.texture ? `/images/textures/blocks/${blockData?.texture}.png` : "";
+  const sideTexture = blockData?.sideTexture
+    ? `/images/textures/blocks/${blockData?.sideTexture}.png`
     : "";
-  const sideTexture = block.block.sideTexture
-    ? `/images/textures/blocks/${block.block.sideTexture}.png`
+  const topTexture = blockData?.topTexture
+    ? `/images/textures/blocks/${blockData?.topTexture}.png`
     : "";
-  const topTexture = block.block.topTexture
-    ? `/images/textures/blocks/${block.block.topTexture}.png`
-    : "";
-  const bottomTexture = block.block.bottomTexture
-    ? `/images/textures/blocks/${block.block.bottomTexture}.png`
+  const bottomTexture = blockData?.bottomTexture
+    ? `/images/textures/blocks/${blockData?.bottomTexture}.png`
     : "";
 
   const [finalMain, setFinalMain] = useState(defaultTexture);
@@ -53,7 +63,7 @@ function SandboxBlock({
   }
 
   let materials: THREE.Material[];
-  if (block.block.texture) {
+  if (blockData?.texture) {
     const mainTex = useTexture(
       finalMain
       // { fallback: fallbackTexture }
@@ -79,7 +89,7 @@ function SandboxBlock({
   useEffect(() => {
     let mounted = true;
     async function fetchTextures() {
-      if (block.block.texture) {
+      if (blockData?.texture) {
         const main = await checkImage(mainTexture, fallbackTexture);
         if (mounted) setFinalMain(main);
       } else {
@@ -97,12 +107,7 @@ function SandboxBlock({
     return () => {
       mounted = false;
     };
-  }, [
-    block.block.texture,
-    block.block.sideTexture,
-    block.block.topTexture,
-    block.block.bottomTexture,
-  ]);
+  }, [blockData?.texture, blockData?.sideTexture, blockData?.topTexture, blockData?.bottomTexture]);
 
   return (
     <group
@@ -114,12 +119,12 @@ function SandboxBlock({
         material={materials}
         position={[
           0,
-          isBlockHeight90Percent ? (block.block.id === "120" ? -0.09375 : -0.035) : 0,
+          isBlockHeight90Percent ? (blockData?.id === "120" ? -0.09375 : -0.035) : 0,
           0,
         ]}
       >
         <boxGeometry
-          args={[1, isBlockHeight90Percent ? (block.block.id === "120" ? 0.8125 : 0.93) : 1, 1]}
+          args={[1, isBlockHeight90Percent ? (blockData?.id === "120" ? 0.8125 : 0.93) : 1, 1]}
         />
       </mesh>
 
