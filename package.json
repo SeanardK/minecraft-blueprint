@@ -23,7 +23,6 @@
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.3.0",
     "@types/three": "^0.180.0",
-    "add": "^2.0.6",
     "animejs": "^4.2.0",
     "antd": "^5.27.4",
     "jose": "^6.1.0",
