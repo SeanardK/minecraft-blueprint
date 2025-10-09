@@ -4,13 +4,13 @@ import { OrbitControls } from "@react-three/drei";
 import { Canvas, type ThreeEvent } from "@react-three/fiber";
 import { notification } from "antd";
 import { useAtom } from "jotai";
-import { useState } from "react";
-import SandboxBlock from "../components/Block";
+import { useEffect, useState } from "react";
+import SandboxBlock, { type BlockProperties } from "../components/Block";
 import SandboxContextMenu from "../components/ContextMenu";
 import SandboxToolbar from "../components/Toolbar";
 import { blocksPlaced, selectedBlock } from "../store";
 
-function SandboxIndex() {
+function SandboxIndex({ data }: { data?: BlockProperties[] }) {
   const [api, contextHolder] = notification.useNotification();
 
   const [mode, setMode] = useState<"add" | "remove">("add");
@@ -94,6 +94,12 @@ function SandboxIndex() {
       );
     }
   };
+
+  useEffect(() => {
+    if (data) {
+      setBlockList(data);
+    }
+  }, [data]);
 
   return (
     <>
