@@ -17,3 +17,4 @@ export const blocksPlaced = atom<BlockProperties[]>([
 export const selectedBlock = atom(ItemList[1]);
 export const activeToolbarIndex = atom(0);
 export const listToolbarItems = atom(ItemList.slice(0 + 9 * multiply, 9 + 9 * multiply));
+export const hideBlockId = atom<string[]>([]);

@@ -4,11 +4,11 @@ import { OrbitControls } from "@react-three/drei";
 import { Canvas, type ThreeEvent } from "@react-three/fiber";
 import { notification } from "antd";
 import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import SandboxBlock, { type BlockProperties } from "../components/Block";
 import SandboxContextMenu from "../components/ContextMenu";
 import SandboxToolbar from "../components/Toolbar";
-import { blocksPlaced, selectedBlock } from "../store";
+import { blocksPlaced, hideBlockId, selectedBlock } from "../store";
 
 function SandboxIndex({ data }: { data?: BlockProperties[] }) {
   const [api, contextHolder] = notification.useNotification();
@@ -18,6 +18,7 @@ function SandboxIndex({ data }: { data?: BlockProperties[] }) {
   const [isShowContextMenu, setIsShowContextMenu] = useState(false);
 
   const [selectedBlockLocale] = useAtom(selectedBlock);
+  const [blocksHidden] = useAtom(hideBlockId);
 
   const initialBlockList: {
     x: number;
@@ -33,6 +34,10 @@ function SandboxIndex({ data }: { data?: BlockProperties[] }) {
     },
   ];
   const [blockList, setBlockList] = useAtom(blocksPlaced);
+
+  const showedBlock = useMemo(() => {
+    return blockList.filter((block) => !blocksHidden.includes(block.blockId));
+  }, [blockList, blocksHidden]);
 
   const handleClick = (
     data: ThreeEvent<MouseEvent>,
@@ -115,7 +120,7 @@ function SandboxIndex({ data }: { data?: BlockProperties[] }) {
           camera={{ position: [3, 3, 3] }}
         >
           <ambientLight intensity={1} />
-          {blockList.map((block, index) => {
+          {showedBlock.map((block, index) => {
             const blockId = `block-${block.x}-${block.y}-${block.z}-${index}`;
 
             return <SandboxBlock block={block} handleClick={handleClick} key={blockId} />;
