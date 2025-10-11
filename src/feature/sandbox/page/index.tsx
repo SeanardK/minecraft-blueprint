@@ -7,7 +7,9 @@ import { useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 import SandboxBlock, { type BlockProperties } from "../components/Block";
 import SandboxContextMenu from "../components/ContextMenu";
+import SandboxStair from "../components/Stair";
 import SandboxToolbar from "../components/Toolbar";
+import { listStairId } from "../data/blockNotFull";
 import { blocksPlaced, hideBlockId, selectedBlock } from "../store";
 
 function SandboxIndex({ data }: { data?: BlockProperties[] }) {
@@ -25,6 +27,7 @@ function SandboxIndex({ data }: { data?: BlockProperties[] }) {
     y: number;
     z: number;
     blockId: string;
+    rotateY?: number;
   }[] = [
     {
       x: 0,
@@ -45,6 +48,12 @@ function SandboxIndex({ data }: { data?: BlockProperties[] }) {
   ) => {
     data.stopPropagation();
 
+    const normalVector: [number, number, number] = [
+      Math.round(data?.face?.normal?.x || 0),
+      Math.round(data?.face?.normal?.y || 0),
+      Math.round(data?.face?.normal?.z || 0),
+    ];
+
     const blockPosition = position;
     const selectedFace = data.normal;
 
@@ -63,7 +72,7 @@ function SandboxIndex({ data }: { data?: BlockProperties[] }) {
         if (selectedFace?.y !== 0) {
           newBlockPosition = {
             x: blockPosition.x,
-            y: blockPosition.y + +selectedFace?.y,
+            y: blockPosition.y + selectedFace?.y,
             z: blockPosition.z,
           };
         }
@@ -72,12 +81,19 @@ function SandboxIndex({ data }: { data?: BlockProperties[] }) {
           newBlockPosition = {
             x: blockPosition.x,
             y: blockPosition.y,
-            z: blockPosition.z + +selectedFace?.z,
+            z: blockPosition.z + selectedFace?.z,
           };
         }
       }
 
-      setBlockList((prev) => [...prev, { ...newBlockPosition, blockId: selectedBlockLocale.id }]);
+      setBlockList((prev) => [
+        ...prev,
+        {
+          ...newBlockPosition,
+          facing: normalVector,
+          blockId: selectedBlockLocale.id,
+        },
+      ]);
     }
 
     if (mode === "remove") {
@@ -123,7 +139,15 @@ function SandboxIndex({ data }: { data?: BlockProperties[] }) {
           {showedBlock.map((block, index) => {
             const blockId = `block-${block.x}-${block.y}-${block.z}-${index}`;
 
-            return <SandboxBlock block={block} handleClick={handleClick} key={blockId} />;
+            const isStair = listStairId.includes(block.blockId);
+
+            return (
+              <>
+                {isStair && <SandboxStair block={block} handleClick={handleClick} key={blockId} />}
+
+                {!isStair && <SandboxBlock block={block} handleClick={handleClick} key={blockId} />}
+              </>
+            );
           })}
 
           <OrbitControls />
