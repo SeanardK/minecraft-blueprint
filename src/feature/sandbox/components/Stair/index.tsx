@@ -99,10 +99,10 @@ function SandboxStair({
 
   const rotation = useMemo(() => {
     const angleMap: Record<string, number> = {
-      "0,0,-1": 0 + 180,
-      "-1,0,0": 90 + 180,
-      "0,0,1": 180 + 180,
-      "1,0,0": 270 + 180,
+      "0,0,-1": 0,
+      "-1,0,0": 90,
+      "0,0,1": 180,
+      "1,0,0": 270,
     };
 
     const key = block?.facing?.toString();
@@ -112,16 +112,22 @@ function SandboxStair({
   return (
     <group
       onClick={(data) => handleClick(data, { x: block.x, y: block.y, z: block.z })}
-      position={[block.x, -0.25, block.z]}
+      position={[block.x, block.y, block.z]}
       key={blockId}
-      rotation={rotation}
     >
-      <mesh material={materials} position={[0, 0.5, -0.25]}>
-        <boxGeometry args={[1, 0.5, 0.5]} />
+      <mesh renderOrder={1}>
+        <boxGeometry args={[1.01, 1.01, 1.01]} />
+        <meshPhongMaterial color="#ff0000" opacity={0} transparent />
       </mesh>
-      <mesh material={materials} position={[0, 0, 0]}>
-        <boxGeometry args={[1, 0.5, 1]} />
-      </mesh>
+
+      <group rotation={rotation}>
+        <mesh material={materials} position={[0, 0.25, 0.25]}>
+          <boxGeometry args={[1, 0.5, 0.5]} />
+        </mesh>
+        <mesh material={materials} position={[0, -0.25, 0]}>
+          <boxGeometry args={[1, 0.5, 1]} />
+        </mesh>
+      </group>
 
       {/* <mesh>
         <boxGeometry args={[1.01, 1.01, 1.01]} />
