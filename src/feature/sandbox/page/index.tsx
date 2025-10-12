@@ -7,9 +7,10 @@ import { useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 import SandboxBlock, { type BlockProperties } from "../components/Block";
 import SandboxContextMenu from "../components/ContextMenu";
+import SandboxSlab from "../components/Slab";
 import SandboxStair from "../components/Stair";
 import SandboxToolbar from "../components/Toolbar";
-import { listStairId } from "../data/blockNotFull";
+import { listSlabId, listStairId } from "../data/blockNotFull";
 import { blocksPlaced, hideBlockId, selectedBlock } from "../store";
 
 function SandboxIndex({ data }: { data?: BlockProperties[] }) {
@@ -133,19 +134,24 @@ function SandboxIndex({ data }: { data?: BlockProperties[] }) {
               setIsShowContextMenu((prev) => !prev);
             }
           }}
-          camera={{ position: [3, 3, 3] }}
+          camera={{ position: [3, 3, 3], fov: 50 }}
         >
           <ambientLight intensity={1} />
           {showedBlock.map((block, index) => {
             const blockId = `block-${block.x}-${block.y}-${block.z}-${index}`;
 
             const isStair = listStairId.includes(block.blockId);
+            const isSlab = listSlabId.includes(block.blockId);
 
             return (
               <>
                 {isStair && <SandboxStair block={block} handleClick={handleClick} key={blockId} />}
 
-                {!isStair && <SandboxBlock block={block} handleClick={handleClick} key={blockId} />}
+                {isSlab && <SandboxSlab block={block} handleClick={handleClick} key={blockId} />}
+
+                {!isStair && !isSlab && (
+                  <SandboxBlock block={block} handleClick={handleClick} key={blockId} />
+                )}
               </>
             );
           })}
