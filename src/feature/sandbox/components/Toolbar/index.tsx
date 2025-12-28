@@ -2,13 +2,18 @@
 
 import "./item-icon.css";
 
-import { Button, Modal } from "antd";
+import { Button, Card, Input, Modal } from "antd";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { AiOutlineTable } from "react-icons/ai";
 import { MdNumbers } from "react-icons/md";
 import { ItemList, type ItemType } from "../../data/ItemList";
-import { activeToolbarIndex, listToolbarItems, selectedBlock } from "../../store";
+import {
+  activeToolbarIndex,
+  layerShowed as layering,
+  listToolbarItems,
+  selectedBlock,
+} from "../../store";
 import SandboxTotalBlockRequired from "../TotalBlockRequired";
 
 // Local Components
@@ -46,6 +51,8 @@ function SandboxToolbar() {
   const [activeToolbar, setActiveToolbar] = useAtom(activeToolbarIndex);
   const [listToolbar, setListToolbar] = useAtom(listToolbarItems);
 
+  const [layerShowed, setLayerShowed] = useAtom(layering);
+
   useEffect(() => {
     setSelectedBlock(listToolbar[activeToolbar]);
   }, [activeToolbar, setSelectedBlock, listToolbar]);
@@ -53,22 +60,154 @@ function SandboxToolbar() {
   return (
     <>
       <div className="absolute w-screen bottom-4">
-        <div className="w-full z-10 flex justify-center gap-0.5">
+        <div className="w-full z-10 flex justify-center gap-0.5 px-2">
+          <div className="lg:block hidden">
+            <Button
+              className="!w-[50px] !h-[50px] text-xl font-bold mr-4"
+              onClick={() => {
+                setShowModalTotalBlockRequired(true);
+              }}
+            >
+              <MdNumbers size={32} />
+            </Button>
+          </div>
+
+          <div className="absolute -top-15 max-w-[600px] w-full px-2 lg:px-0">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Card className="[&_.ant-card-body]:!p-2">
+                <div className="flex flex-1 items-center justify-center gap-2">
+                  <Input
+                    value={layerShowed.x.min}
+                    onChange={(value) =>
+                      setLayerShowed((prev) => {
+                        return {
+                          ...prev,
+                          x: {
+                            ...prev.x,
+                            min:
+                              value.target.value === "" ? -Infinity : parseInt(value.target.value),
+                          },
+                        };
+                      })
+                    }
+                    type="number"
+                    placeholder="X Start"
+                  />
+                  <Input
+                    value={layerShowed.x.max}
+                    onChange={(value) =>
+                      setLayerShowed((prev) => ({
+                        ...prev,
+                        x: {
+                          ...prev.x,
+                          max: value.target.value === "" ? Infinity : parseInt(value.target.value),
+                        },
+                      }))
+                    }
+                    type="number"
+                    placeholder="X End"
+                  />
+                </div>
+              </Card>
+
+              <Card className="[&_.ant-card-body]:!p-2">
+                <div className="flex flex-1 items-center justify-center gap-2">
+                  <Input
+                    value={layerShowed.y.min}
+                    onChange={(value) =>
+                      setLayerShowed((prev) => ({
+                        ...prev,
+                        y: {
+                          ...prev.y,
+                          min: value.target.value === "" ? -Infinity : parseInt(value.target.value),
+                        },
+                      }))
+                    }
+                    type="number"
+                    placeholder="Y Start"
+                  />
+                  <Input
+                    value={layerShowed.y.max}
+                    onChange={(value) =>
+                      setLayerShowed((prev) => ({
+                        ...prev,
+                        y: {
+                          ...prev.y,
+                          max: value.target.value === "" ? Infinity : parseInt(value.target.value),
+                        },
+                      }))
+                    }
+                    type="number"
+                    placeholder="Y End"
+                  />
+                </div>
+              </Card>
+
+              <Card className="[&_.ant-card-body]:!p-2">
+                <div className="flex flex-1 items-center justify-center gap-2">
+                  <Input
+                    value={layerShowed.z.min}
+                    onChange={(value) =>
+                      setLayerShowed((prev) => ({
+                        ...prev,
+                        z: {
+                          ...prev.z,
+                          min: value.target.value === "" ? -Infinity : parseInt(value.target.value),
+                        },
+                      }))
+                    }
+                    type="number"
+                    placeholder="Z Start"
+                  />
+                  <Input
+                    value={layerShowed.z.max}
+                    onChange={(value) =>
+                      setLayerShowed((prev) => ({
+                        ...prev,
+                        z: {
+                          ...prev.z,
+                          max: value.target.value === "" ? Infinity : parseInt(value.target.value),
+                        },
+                      }))
+                    }
+                    type="number"
+                    placeholder="Z End"
+                  />
+                </div>
+              </Card>
+            </div>
+          </div>
+
+          <Toolbar
+            listToolbar={listToolbar}
+            activeToolbar={activeToolbar}
+            setActiveToolbar={setActiveToolbar}
+          />
+
+          <div className="lg:block hidden">
+            <Button
+              className="!w-[50px] !h-[50px] text-xl font-bold ml-4 !p-0"
+              onClick={() => {
+                setShowModalItems(true);
+              }}
+            >
+              <AiOutlineTable size={32} />
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex justify-center mt-3 lg:hidden gap-2">
           <Button
-            className="!w-[50px] !h-[50px] text-xl font-bold mr-4"
+            className="!w-[50px] !h-[50px] text-xl font-bold"
             onClick={() => {
               setShowModalTotalBlockRequired(true);
             }}
           >
             <MdNumbers size={32} />
           </Button>
-          <Toolbar
-            listToolbar={listToolbar}
-            activeToolbar={activeToolbar}
-            setActiveToolbar={setActiveToolbar}
-          />
+
           <Button
-            className="!w-[50px] !h-[50px] text-xl font-bold ml-4 !p-0"
+            className="!w-[50px] !h-[50px] text-xl font-bold !p-0"
             onClick={() => {
               setShowModalItems(true);
             }}
@@ -126,7 +265,7 @@ function SandboxToolbar() {
         footer={null}
         className="!w-auto !min-w-0"
       >
-        <div className="overflow-auto max-h-[80vh] max-w-[500px]">
+        <div className="overflow-auto max-h-[80vh] max-w-[600px]">
           <SandboxTotalBlockRequired />
         </div>
       </Modal>
