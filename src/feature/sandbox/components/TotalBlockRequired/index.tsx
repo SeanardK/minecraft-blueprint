@@ -114,7 +114,13 @@ function SandboxTotalBlockRequired() {
         </Button>
       </div>
 
-      <Table dataSource={data} columns={columns} pagination={false} sticky />
+      <Table
+        dataSource={data}
+        columns={columns}
+        pagination={false}
+        sticky
+        scroll={{ x: "max-content" }}
+      />
     </>
   );
 }

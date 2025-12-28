@@ -11,7 +11,7 @@ import SandboxSlab from "../components/Slab";
 import SandboxStair from "../components/Stair";
 import SandboxToolbar from "../components/Toolbar";
 import { listSlabId, listStairId } from "../data/blockNotFull";
-import { blocksPlaced, hideBlockId, selectedBlock } from "../store";
+import { blocksPlaced, hideBlockId, layerShowed, selectedBlock } from "../store";
 
 function SandboxIndex({ data }: { data?: BlockProperties[] }) {
   const [api, contextHolder] = notification.useNotification();
@@ -22,6 +22,8 @@ function SandboxIndex({ data }: { data?: BlockProperties[] }) {
 
   const [selectedBlockLocale] = useAtom(selectedBlock);
   const [blocksHidden] = useAtom(hideBlockId);
+
+  const [layering] = useAtom(layerShowed);
 
   const initialBlockList: {
     x: number;
@@ -40,8 +42,17 @@ function SandboxIndex({ data }: { data?: BlockProperties[] }) {
   const [blockList, setBlockList] = useAtom(blocksPlaced);
 
   const showedBlock = useMemo(() => {
-    return blockList.filter((block) => !blocksHidden.includes(block.blockId));
-  }, [blockList, blocksHidden]);
+    return blockList.filter(
+      (block) =>
+        !blocksHidden.includes(block.blockId) &&
+        block.x >= (layering.x.min ?? -Infinity) &&
+        block.x <= (layering.x.max ?? Infinity) &&
+        block.y >= (layering.y.min ?? -Infinity) &&
+        block.y <= (layering.y.max ?? Infinity) &&
+        block.z >= (layering.z.min ?? -Infinity) &&
+        block.z <= (layering.z.max ?? Infinity)
+    );
+  }, [blockList, blocksHidden, layering]);
 
   const handleClick = (
     data: ThreeEvent<MouseEvent>,
