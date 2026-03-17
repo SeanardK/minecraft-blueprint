@@ -7,7 +7,6 @@ COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm run build
-RUN pnpm prune --prod
 
 # Production image
 FROM node:20-alpine AS runner
