@@ -1,9 +1,11 @@
 services:
   mc-blueprint:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
     container_name: mc-blueprint
     restart: unless-stopped
     ports:
-      - "5000:3000"
+      - "${DOCKER_PORT:-3000}:3000"
